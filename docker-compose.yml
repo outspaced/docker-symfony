@@ -1,23 +1,14 @@
 version: '2'
 
 services:
-    db:
-        image: mysql
-        volumes:
-            - "./.data/db:/var/lib/mysql"
-        environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     php:
         build:
             context: php7-fpm
             args:
                 TIMEZONE: ${TIMEZONE}
         volumes:
-            - ${SYMFONY_APP_PATH}:/var/www/symfony
-            - ./logs/symfony:/var/www/symfony/app/logs
+            - ${SYMFONY_APP_PATH}:/var/www/symfony:delegated
+            - ./logs/symfony:/var/www/symfony/app/logs:delegated
     nginx:
         build: nginx
         ports:
@@ -36,3 +27,7 @@ services:
         volumes_from:
             - php
             - nginx
+    dynamodb:
+        build: dynamodb
+        ports:
+            - 8066:8000
